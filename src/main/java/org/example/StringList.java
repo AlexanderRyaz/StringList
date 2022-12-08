@@ -31,25 +31,52 @@ public class StringList implements MyList<String> {
         if (item == null) {
             throw new MyListException("Нельзя добавить null");
         }
-        if (index>=array.length){
+        if (index >= array.length) {
             throw new MyListException("Добавление элемента за пределы списка");
         }
-        String[]newArray=new String[array.length+1];
-        System.arraycopy(array,0,newArray,0,index);
-        newArray[index]=item;
-        System.arraycopy(array,index,newArray,index+1,array.length-index);
-        array=newArray;
+        String[] newArray = new String[array.length + 1];
+        System.arraycopy(array, 0, newArray, 0, index);
+        newArray[index] = item;
+        System.arraycopy(array, index, newArray, index + 1, array.length - index);
+        array = newArray;
         return item;
     }
 
     @Override
     public String set(int index, String item) {
-        return null;
+        if (item == null) {
+            throw new MyListException("Нельзя добавить null");
+        }
+        if (index >= array.length) {
+            throw new MyListException("Добавление элемента за пределы списка");
+        }
+        array[index] = item;
+        return item;
     }
 
     @Override
     public String remove(String item) {
-        return null;
+        if (isEmpty()) {
+            throw new MyListException("список пустой, удалять нечего");
+        }
+        if (item == null) {
+            throw new MyListException("Нельзя удалить null");
+        }
+        int index = -1;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i].equals(item)) {
+                index = i;
+                break;
+            }
+        }
+        if (index == -1) {
+            throw new MyListException("элемент " + item + " не найден");
+        }
+        String[] newArray = new String[array.length - 1];
+        System.arraycopy(array, 0, newArray, 0, index);
+        System.arraycopy(array, index + 1, newArray, index, array.length - index - 1);
+        array = newArray;
+        return item;
     }
 
     @Override

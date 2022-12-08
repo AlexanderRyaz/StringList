@@ -55,14 +55,43 @@ class StringListTest {
 
     @ParameterizedTest
     @MethodSource("prepareDataForAddItemToListAtIndex")
-    void shouldAddItemToListAtIndex(int index,String item, String[]expected) {
+    void shouldAddItemToListAtIndex(int index, String item, String[] expected) {
         list.add("проверяем");
         list.add("работу");
-        list.add( "метода");
+        list.add("метода");
         String actualItem = list.add(index, item);
-        assertEquals(4,list.size());
-        assertEquals(list.get(index),actualItem);
-        assertEquals(expected,list.toArray());
+        assertEquals(4, list.size());
+        assertEquals(list.get(index), actualItem);
+        assertEquals(expected, list.toArray());
+    }
+
+    @ParameterizedTest
+    @MethodSource("prepareDataForAddItemToListAtIndexWithError")
+    void shouldFailByAddItemToListAtIndex(int index, String item, String expectedMessage) {
+        list.add("проверяем");
+        list.add("работу");
+        list.add("метода");
+        assertThrows(MyListException.class, () -> list.add(index, item), expectedMessage);
+    }
+
+    @ParameterizedTest
+    @MethodSource("prepareDataForAddItemToListAtIndexWithError")
+    void shouldFailBySetItem(int index, String item, String expectedMessage) {
+        list.add("проверяем");
+        list.add("работу");
+        list.add("метода");
+        assertThrows(MyListException.class, () -> list.set(index, item), expectedMessage);
+    }
+
+    @Test
+    void shouldSetItemToList() {
+        list.add("проверяем");
+        list.add("работу");
+        list.add("метода");
+        list.set(0, "проверили");
+        assertEquals(3, list.size());
+        assertEquals(list.get(0), "проверили");
+        assertEquals(new String[]{"проверили", "работу", "метода"}, list.toArray());
     }
 
     public static Stream<Arguments> prepareDataForAddItemToListAtIndex() {
@@ -71,4 +100,12 @@ class StringListTest {
                 Arguments.of(2, "нашего", new String[]{"проверяем", "работу", "нашего", "метода"})
         );
     }
+
+    public static Stream<Arguments> prepareDataForAddItemToListAtIndexWithError() {
+        return Stream.of(
+                Arguments.of(0, null, "Нельзя добавить null"),
+                Arguments.of(15, "abc", "Добавление элемента за пределы списка")
+        );
+    }
+
 }
