@@ -31,7 +31,7 @@ public class StringList implements MyList<String> {
         if (item == null) {
             throw new MyListException("Нельзя добавить null");
         }
-        if (index >= array.length) {
+        if (index >= array.length || index < 0) {
             throw new MyListException("Добавление элемента за пределы списка");
         }
         String[] newArray = new String[array.length + 1];
@@ -47,7 +47,7 @@ public class StringList implements MyList<String> {
         if (item == null) {
             throw new MyListException("Нельзя добавить null");
         }
-        if (index >= array.length) {
+        if (index >= array.length || index < 0) {
             throw new MyListException("Добавление элемента за пределы списка");
         }
         array[index] = item;
@@ -81,31 +81,65 @@ public class StringList implements MyList<String> {
 
     @Override
     public String remove(int index) {
-        return null;
+        if (index >= array.length || index < 0) {
+            throw new MyListException("Удаление элемента за пределами списка");
+        }
+        String item = array[index];
+        String[] newArray = new String[array.length - 1];
+        System.arraycopy(array, 0, newArray, 0, index);
+        System.arraycopy(array, index + 1, newArray, index, array.length - index - 1);
+        array = newArray;
+        return item;
     }
 
     @Override
     public boolean contains(String item) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i].equals(item)) {
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public int indexOf(String item) {
-        return 0;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i].equals(item)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
     public int lastIndexOf(String item) {
-        return 0;
+        for (int i = array.length - 1; i >= 0; i--) {
+            if (array[i].equals(item)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
     public String get(int index) {
-        return null;
+        if (index >= array.length || index < 0) {
+            throw new MyListException("Индекс за пределами списка");
+        }
+        return array[index];
     }
 
     @Override
     public boolean equals(MyList otherList) {
+        if (otherList == null) {
+            throw new MyListException("сравнение с null");
+        }
+        if (otherList.getClass() == this.getClass()) {
+            if (otherList.size() == this.size()) {
+                return Arrays.equals(((StringList) otherList).toArray(), array);
+            }
+        }
         return false;
     }
 
