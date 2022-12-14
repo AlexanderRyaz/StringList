@@ -95,8 +95,11 @@ public class IntegerList implements MyList<Integer> {
 
     @Override
     public boolean contains(Integer item) {
+        if (item == null) {
+            return false;
+        }
         Integer[] integers = Arrays.copyOf(array, array.length);
-        return binarySearch(integers,item);
+        return binarySearch(integers, item);
     }
 
     @Override
@@ -160,7 +163,8 @@ public class IntegerList implements MyList<Integer> {
     public Integer[] toArray() {
         return array;
     }
-//    Сортировка пузырьком: 20946
+
+    //    Сортировка пузырьком: 20946
     public static void sortBubble(Integer[] arr) {
         for (int i = 0; i < arr.length - 1; i++) {
             for (int j = 0; j < arr.length - 1 - i; j++) {
@@ -170,11 +174,13 @@ public class IntegerList implements MyList<Integer> {
             }
         }
     }
+
     private static void swapElements(Integer[] arr, int indexA, int indexB) {
         int tmp = arr[indexA];
         arr[indexA] = arr[indexB];
         arr[indexB] = tmp;
     }
+
     //Сортировка выбором: 5181
     public static void sortSelection(Integer[] arr) {
         for (int i = 0; i < arr.length - 1; i++) {
@@ -187,7 +193,8 @@ public class IntegerList implements MyList<Integer> {
             swapElements(arr, i, minElementIndex);
         }
     }
-//    Сортировка вставкой: 1022 - самая быстрая
+
+    //    Сортировка вставкой: 1022 - самая быстрая
     public static void sortInsertion(Integer[] arr) {
         for (int i = 1; i < arr.length; i++) {
             int temp = arr[i];
@@ -199,6 +206,7 @@ public class IntegerList implements MyList<Integer> {
             arr[j] = temp;
         }
     }
+
     public static boolean binarySearch(Integer[] arr, int element) {
         sortInsertion(arr);
         int min = 0;
