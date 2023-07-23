@@ -62,7 +62,7 @@ public interface MyList<T> {
     boolean equals(MyList otherList);
 
     // Вернуть фактическое количество элементов.
-    int size();
+    long size();
 
     // Вернуть true,
     // если элементов в списке нет,

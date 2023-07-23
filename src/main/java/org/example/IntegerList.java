@@ -3,6 +3,7 @@ package org.example;
 import org.example.exception.MyListException;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class IntegerList implements MyList<Integer> {
 
@@ -13,7 +14,7 @@ public class IntegerList implements MyList<Integer> {
     }
 
     public IntegerList() {
-        this.array = new Integer[0];
+        this.array = new Integer[10];
     }
 
     @Override
@@ -21,9 +22,15 @@ public class IntegerList implements MyList<Integer> {
         if (item == null) {
             throw new MyListException("Нельзя добавить null");
         }
-        Integer[] newArray = Arrays.copyOf(this.array, this.array.length + 1);
-        newArray[this.array.length] = item;
-        array = newArray;
+        if (array.length == size()) {
+            grow();
+        }
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == null) {
+                array[i] = item;
+                break;
+            }
+        }
         return item;
     }
 
@@ -32,13 +39,17 @@ public class IntegerList implements MyList<Integer> {
         if (item == null) {
             throw new MyListException("Нельзя добавить null");
         }
-        if (index >= array.length || index < 0) {
+        int oldArrayLength = array.length;
+        if (index >= oldArrayLength || index < 0) {
             throw new MyListException("Добавление элемента за пределы списка");
         }
-        Integer[] newArray = new Integer[array.length + 1];
+        if (oldArrayLength == size()) {
+            grow();
+        }
+        Integer[] newArray = Arrays.copyOf(array, oldArrayLength);
         System.arraycopy(array, 0, newArray, 0, index);
         newArray[index] = item;
-        System.arraycopy(array, index, newArray, index + 1, array.length - index);
+        System.arraycopy(array, index, newArray, index + 1, (int) size() - index);
         array = newArray;
         return item;
     }
@@ -63,21 +74,13 @@ public class IntegerList implements MyList<Integer> {
         if (item == null) {
             throw new MyListException("Нельзя удалить null");
         }
-        int index = -1;
         for (int i = 0; i < array.length; i++) {
-            if (array[i].equals(item)) {
-                index = i;
-                break;
+            if (array[i] != null && array[i].equals(item)) {
+                array[i] = null;
+                return item;
             }
         }
-        if (index == -1) {
-            throw new MyListException("элемент " + item + " не найден");
-        }
-        Integer[] newArray = new Integer[array.length - 1];
-        System.arraycopy(array, 0, newArray, 0, index);
-        System.arraycopy(array, index + 1, newArray, index, array.length - index - 1);
-        array = newArray;
-        return item;
+        throw new MyListException("элемент " + item + " не найден");
     }
 
     @Override
@@ -86,10 +89,7 @@ public class IntegerList implements MyList<Integer> {
             throw new MyListException("Удаление элемента за пределами списка");
         }
         Integer item = array[index];
-        Integer[] newArray = new Integer[array.length - 1];
-        System.arraycopy(array, 0, newArray, 0, index);
-        System.arraycopy(array, index + 1, newArray, index, array.length - index - 1);
-        array = newArray;
+        array[index] = null;
         return item;
     }
 
@@ -105,7 +105,7 @@ public class IntegerList implements MyList<Integer> {
     @Override
     public int indexOf(Integer item) {
         for (int i = 0; i < array.length; i++) {
-            if (array[i].equals(item)) {
+            if (array[i] != null && array[i].equals(item)) {
                 return i;
             }
         }
@@ -115,7 +115,7 @@ public class IntegerList implements MyList<Integer> {
     @Override
     public int lastIndexOf(Integer item) {
         for (int i = array.length - 1; i >= 0; i--) {
-            if (array[i].equals(item)) {
+            if (array[i] != null && array[i].equals(item)) {
                 return i;
             }
         }
@@ -144,13 +144,14 @@ public class IntegerList implements MyList<Integer> {
     }
 
     @Override
-    public int size() {
-        return array.length;
+    public long size() {
+        return Arrays.stream(array).filter(Objects::nonNull).count();
+
     }
 
     @Override
     public boolean isEmpty() {
-        return array.length == 0;
+        return size() == 0;
     }
 
     @Override
@@ -197,8 +198,11 @@ public class IntegerList implements MyList<Integer> {
     //    Сортировка вставкой: 1022 - самая быстрая
     public static void sortInsertion(Integer[] arr) {
         for (int i = 1; i < arr.length; i++) {
-            int temp = arr[i];
-            int j = i;
+            Integer temp = arr[i];
+            Integer j = i;
+            if (temp == null) {
+                continue;
+            }
             while (j > 0 && arr[j - 1] >= temp) {
                 arr[j] = arr[j - 1];
                 j--;
@@ -207,13 +211,13 @@ public class IntegerList implements MyList<Integer> {
         }
     }
 
-    public static boolean binarySearch(Integer[] arr, int element) {
-        sortInsertion(arr);
-        int min = 0;
-        int max = arr.length - 1;
+    public static boolean binarySearch(Integer[] arr, Integer element) {
+        quickSort(arr, 0, arr.length);
+        Integer min = 0;
+        Integer max = arr.length - 1;
 
         while (min <= max) {
-            int mid = (min + max) / 2;
+            Integer mid = (min + max) / 2;
 
             if (element == arr[mid]) {
                 return true;
@@ -226,6 +230,32 @@ public class IntegerList implements MyList<Integer> {
             }
         }
         return false;
+    }
+
+    private void grow() {
+        array = Arrays.copyOf(array, (int) (array.length * 1.5));
+    }
+
+    private static int partition(Integer[] array, int begin, int end) {
+        Integer p = array[end];
+        int i = begin - 1;
+        for (int j = begin; j < end; j++) {
+            if (array[j] <= p) {
+                i++;
+                swapElements(array, i, j);
+            }
+
+        }
+        swapElements(array, i + 1, end);
+        return i + 1;
+    }
+
+    public static void quickSort(Integer[] array, int begin, int end) {
+        if (begin < end) {
+            int p = partition(array, begin, end);
+            quickSort(array, begin, p - 1);
+            quickSort(array, p + 1, end);
+        }
     }
 }
 

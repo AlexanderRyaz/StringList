@@ -144,7 +144,7 @@ public class StringList implements MyList<String> {
     }
 
     @Override
-    public int size() {
+    public long size() {
         return array.length;
     }
 

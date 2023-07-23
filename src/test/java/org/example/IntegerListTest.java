@@ -193,7 +193,7 @@ public class IntegerListTest {
     public static Stream<Arguments> prepareDataForRemoveItemFromListWithError() {
         return Stream.of(
                 Arguments.of(null, "Нельзя удалить null"),
-                Arguments.of(138, "элемент abc не найден")
+                Arguments.of(138, "элемент 138 не найден")
         );
     }
 
