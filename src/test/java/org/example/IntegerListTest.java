@@ -11,17 +11,17 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StringListTest {
-    private StringList list;
+public class IntegerListTest {
+    private IntegerList list;
 
     @BeforeEach
     public void setUp() {
-        list = new StringList();
+        list = new IntegerList();
     }
 
     @Test
     void shouldAddItemToList() {
-        assertTrue(list.contains(list.add("hello")));
+        assertTrue(list.contains(list.add(128)));
         assertEquals(1, list.size());
     }
 
@@ -34,13 +34,13 @@ public class StringListTest {
     @Test
     void shouldGetListSize() {
         assertTrue(list.isEmpty());
-        list.add("test");
+        list.add(33);
         assertEquals(1, list.size());
     }
 
     @Test
     void shouldClearList() {
-        list.add("test");
+        list.add(35);
         assertEquals(1, list.size());
         list.clear();
         assertTrue(list.isEmpty());
@@ -54,7 +54,7 @@ public class StringListTest {
 
     @ParameterizedTest
     @MethodSource("prepareDataForAddItemToListAtIndex")
-    void shouldAddItemToListAtIndex(int index, String item) {
+    void shouldAddItemToListAtIndex(int index, Integer item) {
         prepareList();
         Object add = list.add(index, item);
         Object expected = list.get(index);
@@ -64,14 +64,14 @@ public class StringListTest {
 
     @ParameterizedTest
     @MethodSource("prepareDataForAddItemToListAtIndexWithError")
-    void shouldFailByAddItemToListAtIndex(int index, String item, String expectedMessage) {
+    void shouldFailByAddItemToListAtIndex(int index, Integer item, String expectedMessage) {
         prepareList();
         assertThrows(MyListException.class, () -> list.add(index, item), expectedMessage);
     }
 
     @ParameterizedTest
     @MethodSource("prepareDataForAddItemToListAtIndexWithError")
-    void shouldFailBySetItem(int index, String item, String expectedMessage) {
+    void shouldFailBySetItem(int index, Integer item, String expectedMessage) {
         prepareList();
         assertThrows(MyListException.class, () -> list.set(index, item), expectedMessage);
     }
@@ -79,29 +79,29 @@ public class StringListTest {
     @Test
     void shouldSetItemToList() {
         prepareList();
-        list.set(0, "проверили");
+        list.set(0, 33);
         assertEquals(3, list.size());
-        assertEquals(list.get(0), "проверили");
+        assertEquals(list.get(0), 33);
     }
 
     @ParameterizedTest
     @MethodSource("prepareDataForRemoveItemFromListWithError")
-    void shouldRemoveItemFromListWithError(String item, String expectedErrorMessage) {
+    void shouldRemoveItemFromListWithError(Integer item, String expectedErrorMessage) {
         prepareList();
         assertThrows(MyListException.class, () -> list.remove(item), expectedErrorMessage);
     }
 
     @Test
     void shouldRemoveItemFromEmptyListWithError() {
-        assertThrows(MyListException.class, () -> list.remove("item"), "список пустой, удалять нечего");
+        assertThrows(MyListException.class, () -> list.remove(-1000), "список пустой, удалять нечего");
     }
 
     @Test
     void shouldRemoveItemFromList() {
         prepareList();
-        list.remove("метода");
+        list.remove(1);
         assertEquals(2, list.size());
-        assertFalse(list.contains("метода"));
+        assertFalse(list.contains(23));
     }
 
     @ParameterizedTest
@@ -114,14 +114,14 @@ public class StringListTest {
     @Test
     void shouldRemoveItemAtIndexFromList() {
         prepareList();
-        list.remove(2);
+        list.remove(0);
         assertEquals(2, list.size());
-        assertFalse(list.contains("метода"));
+        assertFalse(list.contains(2));
     }
 
     @ParameterizedTest
     @MethodSource("prepareDataForContainsItem")
-    void shouldTestContainsItem(String item, boolean contains) {
+    void shouldTestContainsItem(Integer item, boolean contains) {
         prepareList();
         boolean actualContains = list.contains(item);
         assertEquals(contains, actualContains);
@@ -129,7 +129,7 @@ public class StringListTest {
 
     @ParameterizedTest
     @MethodSource("prepareDataForIndexOf")
-    void shouldTestIndexOf(String item, int expectedIndex) {
+    void shouldTestIndexOf(Integer item, int expectedIndex) {
         prepareList();
         int actualIndex = list.indexOf(item);
         assertEquals(expectedIndex, actualIndex);
@@ -137,12 +137,12 @@ public class StringListTest {
 
     @ParameterizedTest
     @MethodSource("prepareDataForLastIndexOf")
-    void shouldTestLastIndexOf(String item, int expectedIndex) {
-        list.add("a");
-        list.add("b");
-        list.add("c");
-        list.add("a");
-        list.add("d");
+    void shouldTestLastIndexOf(Integer item, int expectedIndex) {
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(2);
+        list.add(1);
         int actualIndex = list.lastIndexOf(item);
         assertEquals(expectedIndex, actualIndex);
     }
@@ -156,44 +156,44 @@ public class StringListTest {
     @Test
     void shouldTestGet() {
         prepareList();
-        assertEquals("проверяем", list.get(0));
+        assertEquals(2, list.get(0));
     }
 
     @ParameterizedTest
     @MethodSource("prepareDataForEquals")
     void shouldTestEquals(MyList otherList, boolean expectedEquals) {
-        list.add("c");
-        list.add("d");
+        list.add(3);
+        list.add(4);
         boolean actualEquals = list.equals(otherList);
         assertEquals(expectedEquals, actualEquals);
     }
 
     private void prepareList() {
-        list.add("проверяем");
-        list.add("работу");
-        list.add("метода");
+        list.add(2);
+        list.add(23);
+        list.add(-1000);
     }
 
 
     public static Stream<Arguments> prepareDataForAddItemToListAtIndex() {
         return Stream.of(
-                Arguments.of(0, "привет"),
-                Arguments.of(2, "нашего")
+                Arguments.of(0, 18),
+                Arguments.of(2, 38)
         );
     }
 
     public static Stream<Arguments> prepareDataForAddItemToListAtIndexWithError() {
         return Stream.of(
                 Arguments.of(0, null, "Нельзя добавить null"),
-                Arguments.of(15, "abc", "Добавление элемента за пределы списка"),
-                Arguments.of(-15, "abc", "Добавление элемента за пределы списка")
+                Arguments.of(15, 38, "Добавление элемента за пределы списка"),
+                Arguments.of(-15, 45, "Добавление элемента за пределы списка")
         );
     }
 
     public static Stream<Arguments> prepareDataForRemoveItemFromListWithError() {
         return Stream.of(
                 Arguments.of(null, "Нельзя удалить null"),
-                Arguments.of("abc", "элемент abc не найден")
+                Arguments.of(138, "элемент abc не найден")
         );
     }
 
@@ -206,42 +206,49 @@ public class StringListTest {
 
     public static Stream<Arguments> prepareDataForContainsItem() {
         return Stream.of(
-                Arguments.of("работу", true),
-                Arguments.of("привет", false),
+                Arguments.of(-1000, true),
+                Arguments.of(94, false),
                 Arguments.of(null, false)
         );
     }
 
     public static Stream<Arguments> prepareDataForIndexOf() {
         return Stream.of(
-                Arguments.of("работу", 1),
-                Arguments.of("привет", -1),
+                Arguments.of(23, 1),
+                Arguments.of(120, -1),
                 Arguments.of(null, -1)
         );
     }
 
     public static Stream<Arguments> prepareDataForLastIndexOf() {
         return Stream.of(
-                Arguments.of("a", 3),
-                Arguments.of("c", 2),
-                Arguments.of("y", -1),
+                Arguments.of(1, 4),
+                Arguments.of(3, 2),
+                Arguments.of(58, -1),
                 Arguments.of(null, -1)
         );
     }
 
     public static Stream<Arguments> prepareDataForEquals() {
-        StringList list1 = new StringList();
-        list1.add("a");
-        StringList list2 = new StringList();
-        list2.add("a");
-        list2.add("b");
-        StringList list3 = new StringList();
-        list3.add("c");
-        list3.add("d");
+        IntegerList list1 = new IntegerList();
+        list1.add(5);
+        IntegerList list2 = new IntegerList();
+        list2.add(8);
+        list2.add(6);
+        IntegerList list3 = new IntegerList();
+        list3.add(3);
+        list3.add(4);
         return Stream.of(
                 Arguments.of(list1, false),
                 Arguments.of(list2, false),
                 Arguments.of(list3, true)
         );
+    }
+
+    @Test
+    void sortInsertion() {
+        Integer[] array = new Integer[]{1, 5, 4, 3, 2};
+        IntegerList.sortInsertion(array);
+        assertArrayEquals(new Integer[]{1, 2, 3, 4, 5}, array);
     }
 }
